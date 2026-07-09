@@ -13,13 +13,13 @@ from calculations import (
 # -----------------------------
 st.set_page_config(
     page_title="Thermal Stability Classifier",
-    page_icon="🌤️",
+    
     layout="wide"
 )
 
-st.title("🌤️ GAWC Renewables - Thermal Stability Classifier")
+st.title(" GAWC Renewables - Thermal Stability Classifier")
 
-tab1, tab2 = st.tabs(["📝 Manual Input", "📂 File Upload"])
+tab1, tab2 = st.tabs(["Manual Input", "File Upload"])
 
 # =====================================================
 # TAB 1 : MANUAL INPUT
