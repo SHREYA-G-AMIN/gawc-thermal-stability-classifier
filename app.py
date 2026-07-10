@@ -13,11 +13,10 @@ from calculations import (
 # -----------------------------
 st.set_page_config(
     page_title="Thermal Stability Classifier",
-    
     layout="wide"
 )
 
-st.title(" GAWC Renewables - Thermal Stability Classifier")
+st.title("GAWC Renewables - Thermal Stability Classifier")
 
 tab1, tab2 = st.tabs(["Manual Input", "File Upload"])
 
@@ -89,8 +88,7 @@ with tab1:
 
         else:
             st.warning(f"🟡 {stability}")
-
-# =====================================================
+            # =====================================================
 # TAB 2 : FILE UPLOAD
 # =====================================================
 
@@ -105,16 +103,67 @@ with tab2:
 
     if uploaded_file is not None:
 
-        df = pd.read_excel(uploaded_file)
-
-        st.subheader("Input Data")
-
-        st.dataframe(df)
-
         try:
 
-        
+            # Read Excel
+            df = pd.read_excel(uploaded_file)
 
+            # Remove unwanted Unnamed columns
+            df = df.loc[:, ~df.columns.astype(str).str.contains("^Unnamed")]
+
+            # Check empty file
+            if df.empty:
+                st.error("The uploaded Excel file is empty.")
+                st.stop()
+
+            # Required columns
+            required_columns = [
+                "Speed59 m A [m/s]",
+                "Speed 22m [m/s]",
+                "Temperature 59 m [°C]",
+                "Temperature 22 m [°C]"
+            ]
+
+            # Check missing columns
+            missing = [
+                col for col in required_columns
+                if col not in df.columns
+            ]
+
+            if missing:
+                st.error(
+                    f"Missing required columns: {', '.join(missing)}"
+                )
+                st.write("Columns found in file:")
+                st.write(df.columns.tolist())
+                st.stop()
+
+            # Convert required columns to numeric
+            for col in required_columns:
+                df[col] = pd.to_numeric(
+                    df[col].astype(str).str.strip(),
+                    errors="coerce"
+                )
+
+            # Find invalid rows
+            invalid_rows = df[required_columns].isnull().any(axis=1)
+
+            
+            # Keep only valid rows
+            df = df.loc[~invalid_rows].reset_index(drop=True)
+
+            if df.empty:
+                st.error("No valid rows found after validation.")
+                st.stop()
+
+            
+
+            st.subheader("Input Data")
+            st.dataframe(df)
+
+            # -----------------------------
+            # Calculations
+            # -----------------------------
             df["Shear"] = df.apply(
                 lambda row: calculate_shear(
                     row["Speed59 m A [m/s]"],
@@ -128,8 +177,7 @@ with tab2:
             df["Delta T"] = df.apply(
                 lambda row: calculate_delta_t(
                     row["Temperature 59 m [°C]"],
-                  row["Temperature 22 m [°C]"]
-
+                    row["Temperature 22 m [°C]"]
                 ),
                 axis=1
             )
@@ -145,7 +193,6 @@ with tab2:
             st.success("Processing Complete!")
 
             st.subheader("Processed Results")
-
             st.dataframe(df, use_container_width=True)
 
             csv = df.to_csv(index=False).encode("utf-8")
@@ -158,13 +205,10 @@ with tab2:
             )
 
         except KeyError as e:
-
             st.error(
                 f"Column not found: {e}\n\n"
                 "Please make sure the Excel column names match exactly."
             )
 
         except Exception as e:
-
             st.error(f"Error while processing file:\n{e}")
-
