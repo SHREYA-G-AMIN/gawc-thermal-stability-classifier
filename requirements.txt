@@ -2,4 +2,8 @@ streamlit
 pandas
 plotly
 pytest
+<<<<<<< HEAD
 openpyxl
+=======
+openpyxl
+>>>>>>> 62d45e31b7b677e23bb1d9f11be6e75f885138f7
