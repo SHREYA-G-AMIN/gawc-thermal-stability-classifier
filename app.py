@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 from calculations import (
     calculate_shear,
@@ -191,7 +192,7 @@ with tab2:
                 classify_stability
             )
 
-            stability_summary = calculate_stability_percentages(df)
+            
 
             st.success("Processing Complete!")
 
@@ -215,3 +216,16 @@ with tab2:
 
         except Exception as e:
             st.error(f"Error while processing file:\n{e}")
+
+
+        stability_summary = calculate_stability_percentages(df)
+        chart_df = pd.DataFrame({
+                 "Stability": stability_summary.keys(),
+                 "Percentage": stability_summary.values()
+                 })
+        fig = px.pie(
+                 chart_df,
+                 names="Stability",
+                 values="Percentage",
+                 title="Atmospheric Stability Distribution")
+        st.plotly_chart(fig, use_container_width=True)
