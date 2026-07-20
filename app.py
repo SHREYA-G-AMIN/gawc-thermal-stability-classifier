@@ -5,7 +5,8 @@ from calculations import (
     calculate_shear,
     calculate_delta_t,
     calculate_delta_t_per_height,
-    classify_stability
+    classify_stability,
+    calculate_stability_percentages
 )
 
 # -----------------------------
@@ -189,6 +190,8 @@ with tab2:
             df["Class"] = df["Delta T/deltaH"].apply(
                 classify_stability
             )
+
+            stability_summary = calculate_stability_percentages(df)
 
             st.success("Processing Complete!")
 
