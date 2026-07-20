@@ -1,11 +1,13 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 from calculations import (
     calculate_shear,
     calculate_delta_t,
     calculate_delta_t_per_height,
-    classify_stability
+    classify_stability,
+    calculate_stability_percentages
 )
 
 # -----------------------------
@@ -190,6 +192,8 @@ with tab2:
                 classify_stability
             )
 
+            
+
             st.success("Processing Complete!")
 
             st.subheader("Processed Results")
@@ -203,6 +207,34 @@ with tab2:
                 file_name="processed_results.csv",
                 mime="text/csv"
             )
+
+            stability_summary = calculate_stability_percentages(df)
+
+            st.subheader("Atmospheric Stability Distribution")
+            left, right = st.columns([1, 2])
+            with left:
+                st.metric("🟢 Stable", f"{stability_summary['Stable']}%")
+                st.metric("🔴 Unstable", f"{stability_summary['Unstable']}%")
+                st.metric("🟡 Neutral", f"{stability_summary['Neutral']}%")
+            with right:
+                chart_df = pd.DataFrame({
+                    "Stability": list(stability_summary.keys()),
+                    "Percentage": list(stability_summary.values())
+                })
+                fig = px.pie(
+                    chart_df,
+                    names="Stability",
+                    values="Percentage",
+                    color="Stability",
+                    color_discrete_map={
+                        "Stable": "green",
+                        "Unstable": "red",
+                        "Neutral": "gold"
+                    },
+                    hole=0.4
+                )
+                fig.update_traces(textinfo="percent+label")
+                st.plotly_chart(fig, use_container_width=True)
 
         except KeyError as e:
             st.error(
