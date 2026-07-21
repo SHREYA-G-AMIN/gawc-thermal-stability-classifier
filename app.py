@@ -37,13 +37,15 @@ with tab1:
             "Wind Speed at 59m (m/s)",
             min_value=0.0,
             value=0.0,
-            step=0.1
+            step=0.000001,
+            format="%.6f"
         )
 
         temp_59 = st.number_input(
             "Temperature at 59m (°C)",
             value=0.0,
-            step=0.1
+            step=0.000001,
+            format="%.6f"
         )
 
     with col2:
@@ -51,13 +53,15 @@ with tab1:
             "Wind Speed at 22m (m/s)",
             min_value=0.0,
             value=0.0,
-            step=0.1
+            step=0.000001,
+            format="%.6f"
         )
 
         temp_22 = st.number_input(
             "Temperature at 22m (°C)",
             value=0.0,
-            step=0.1
+            step=0.000001,
+            format="%.6f"
         )
 
     if st.button("Calculate"):
@@ -216,6 +220,14 @@ with tab2:
                 st.metric("🟢 Stable", f"{stability_summary['Stable']}%")
                 st.metric("🔴 Unstable", f"{stability_summary['Unstable']}%")
                 st.metric("🟡 Neutral", f"{stability_summary['Neutral']}%")
+
+                st.markdown("**Stability Summary**")
+                summary_text = (
+                    f"Stable      : {stability_summary['Stable']}%\n"
+                    f"Unstable    : {stability_summary['Unstable']}%\n"
+                    f"Neutral     : {stability_summary['Neutral']}%"
+                )
+                st.code(summary_text, language=None)
             with right:
                 chart_df = pd.DataFrame({
                     "Stability": list(stability_summary.keys()),
@@ -244,3 +256,24 @@ with tab2:
 
         except Exception as e:
             st.error(f"Error while processing file:\n{e}")
+
+# =====================================================
+# FOOTER
+# =====================================================
+
+st.divider()
+
+st.markdown(
+    """
+    <div style="text-align: center; color: gray; font-size: 0.9em;">
+        ----------------------------------<br>
+        Developed by<br><br>
+        Shreya G Amin<br>
+        Manya Jain<br>
+        Moulya Hegde<br><br>
+        GAWC Renewables Internship Project<br>
+        ----------------------------------
+    </div>
+    """,
+    unsafe_allow_html=True
+)
